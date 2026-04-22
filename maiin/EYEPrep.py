@@ -258,19 +258,10 @@ def butter_lowpass_filter(data, cutoff, fs, order=4):
 
 def rolling_zscore_causal(signal, timestamps, window_sec=120.0):
     """
-    Causal rolling Z-score on a continuous pupil signal.
+    Rolling Z-score on a continuous pupil signal.
     At each sample t, normalizes using only the past `window_sec` seconds.
     NaNs (blinks) are ignored in mean/std computation but preserved in output.
 
-    Parameters
-    ----------
-    signal     : 1D array, continuous pupil (may contain NaNs for blinks)
-    timestamps : 1D array, corresponding timestamps in seconds
-    window_sec : lookback window in seconds (default 2 min)
-
-    Returns
-    -------
-    z : 1D array, causal Z-scored signal (NaNs preserved)
     """
     signal = np.asarray(signal, float).copy()
     z = np.full(len(signal), np.nan)
@@ -411,6 +402,8 @@ def extract_pupil_epochs(
 
 
 def finalPreprocesseye(data,events):
+    if 'Unity_ViveSREyeTracking' not in data:
+        return None
     eye = data['Unity_ViveSREyeTracking'][0]
     eye_timestamps =data['Unity_ViveSREyeTracking'][1]
     eeg = data['BioSemi']
