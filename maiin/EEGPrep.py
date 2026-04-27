@@ -16,7 +16,7 @@ import os
 import glob
 import pandas as pd
 
-def createRaw(arr, sfreq=2048,trigger_idx=0, eeg_start=1,eeg_end=65,extra_end =89,l_freq=1,h_freq=55):
+def createRaw(arr, sfreq=2048,trigger_idx=0, eeg_start=1,eeg_end=65,extra_end =89,l_freq=0.1,h_freq=55):
     orig_ch_names = (
         ["Trig1"]
         + [f"A{i}" for i in range(1, 33)]
@@ -280,6 +280,7 @@ def findSteeringEvents(eeg_time,eeg_timestamps,motor_timestamps,steering,FS,AMP_
     filtered_right_peaks = np.array(filtered_right_peaks, dtype=int)
     filtered_right_onsets = np.array(filtered_right_onsets, dtype=int)
 
+    
     print("Left turns:", len(filtered_left_peaks))
     print("Right turns:", len(filtered_right_peaks))
     return filtered_left_peaks,filtered_right_peaks, filtered_left_onsets,filtered_right_onsets,smooth
@@ -353,9 +354,9 @@ def epochsCreation (raw, eeg_timestamps,steering,motor_timestamps):
         raw, 
         events, 
         event_id=event_id,
-        tmin=-3.0,           
-        tmax=0.0,            
-        baseline=(-3.0, -2.8), 
+        tmin=-2.0,           
+        tmax=1.0,            
+        baseline=(-2.0, -1.8), 
         preload=True,
         on_missing='warn',
         event_repeated='merge'
@@ -416,10 +417,7 @@ def finalPreprocesseeg(data):
 
     epochs_ar, reject_log = Autorejectf(epochs)
 
-    keep_mask = ~reject_log.bad_epochs
-    events = events[keep_mask]
-    y_class = y_class[keep_mask]
-    y_reg = y_reg[keep_mask]
+    
 
     n_after = len(epochs_ar)
     left_after = np.sum(y_class == 0)
